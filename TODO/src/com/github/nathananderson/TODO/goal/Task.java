@@ -1,35 +1,127 @@
 package com.github.nathananderson.TODO.goal;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+
+/**
+ * Task extends Goal to include actual time estimates and recorded time-on-task 
+ * intervals.
+ * 
+ * @author Nathan Anderson
+ */
 public class Task extends Goal {
-	public double estimate;
-	//TODO: private collection clockedTime
+	private double estimate;
+	private ArrayList<Interval> clockedTime;
 	
-	//TODO: constructors
+	/**
+	 * Default constructor, does nothing but call super() and then initialize 
+	 * the private variables to default values of zero and empty.
+	 */
+	public Task(){
+		super();
+		this.setEstimate(0);
+		clockedTime = new ArrayList<Interval>();
+	}
 	
-	//start a new on-task time interval
+	/**
+	 * Sets the estimated time to complete the task to the given value, and 
+	 * initializes an empty Interval list.
+	 * 
+	 * @param name			The task's name.
+	 * @param estimatedTime	The decimal time estimate (in hours) to complete the task.
+	 */
+	public Task(String name, double estimatedTime){
+		super(name);
+		this.setEstimate(estimatedTime);
+		clockedTime = new ArrayList<Interval>();
+	}
+	
+	/**
+	 * Sets all fields to the desired values.
+	 * 
+	 * @param estimatedTime	The decimal time estimate (in hours) to complete the task.
+	 * @param times			An existing ArrayList of Intervals of work on this task.
+	 */
+	public Task(String name, Date startDate, Date endDate, Progress completion, ArrayList<Goal> childTasks, double estimatedTime, ArrayList<Interval> times){
+		super(name, startDate, endDate, completion, childTasks);
+		this.setEstimate(estimatedTime);
+		clockedTime = times;
+	}
+	
+	/**
+	 * Starts a new active time-on-task Interval
+	 */
 	public void start(){
-		//TODO: add a new Interval to the clockedTime collection and start it
+		clockedTime.add(new Interval());
 	}
 	
-	//stop the current on-task time interval
+	/**
+	 * Stops the first active time-on-task interval found.
+	 */
 	public void stop(){
-		//TODO: find the current running Interval (if one exists) and stop it
+		for(Iterator<Interval> times = clockedTime.iterator(); times.hasNext();){
+			//Iterate through, checking for 'active' Intervals
+			Interval time = times.next();
+			if(time.isActive()){
+				time.end();
+				//since there shouldn't be more than one active interval, break out after closing this interval
+				break;
+			}
+		}
 	}
 	
-	/*
-	 * Overrides Goal's getEstimatedTime() to include the estimate for this task itself
+	/**
+	 * Returns the time estimate for this task. The estimate is assumed to be 
+	 * in decimal hours.
+	 * 
+	 * @return	The time estimate for this task itself, not including child tasks.
 	 */
-	public double getEstimatedTime(){
-		return super.getEstimatedTime() + estimate;
+	public double ownEstimatedTime(){
+		return estimate;
 	}
 	
-	/*
-	 *  Overrides Goal's getElapsedTime() to include the elapsed time from this task itself
+	/**
+	 * Sets the time estimate for this task. The estimate is assumed to be in
+	 * decimal hours.
+	 * 
+	 * @param newEstimate	The desired new time estimate.
 	 */
-	public double getElapsedTime(){
-		//TODO: calculate elapsed time from collection of Intervals
+	public void setEstimate(double newEstimate){
+		estimate = newEstimate;
+	}
+	
+	/**
+	 * Overrides Goal's estimatedTime() to include the estimate for this task itself
+	 * 
+	 * @return
+	 */
+	public double estimatedTime(){
+		return super.estimatedTime() + this.ownEstimatedTime();
+	}
+	
+	/**
+	 * Calculates the total elapsed time of this task's own time intervals
+	 * 
+	 * @return	The total elapsed time of this task's Intervals.
+	 */
+	public double ownElapsedTime(){
 		double elapsed = 0;
+		for(Iterator<Interval> times = clockedTime.iterator(); times.hasNext();){
+			//iterate through the intervals, accumulating the total elapsed time
+			Interval time = times.next();
+			elapsed = elapsed + time.timeElapsed();
+		}
 		
-		return super.getElapsedTime() + elapsed;
+		return elapsed;
+	}
+	
+	/**
+	 * Overrides Goal's elapsedTime() to include the elapsed time from this task itself
+	 * 
+	 * @return	The total elapsed time of this task and its child tasks.
+	 */
+	public double elapsedTime(){
+		return super.elapsedTime() + this.ownElapsedTime();
 	}
 }
