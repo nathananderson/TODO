@@ -1,4 +1,4 @@
-package com.github.nathananderson.TODO.goal;
+package com.nathananderson.TODO.goal;
 
 import java.util.Date;
 

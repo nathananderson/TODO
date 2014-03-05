@@ -1,4 +1,6 @@
-package com.github.nathananderson.TODO;
+package com.nathananderson.TODO;
+
+import com.nathananderson.TODO.R;
 
 import android.os.Bundle;
 import android.app.Activity;

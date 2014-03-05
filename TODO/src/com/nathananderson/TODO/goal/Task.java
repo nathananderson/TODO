@@ -1,4 +1,4 @@
-package com.github.nathananderson.TODO.goal;
+package com.nathananderson.TODO.goal;
 
 import java.util.ArrayList;
 import java.util.Date;

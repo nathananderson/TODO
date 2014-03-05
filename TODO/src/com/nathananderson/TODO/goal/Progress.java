@@ -1,5 +1,5 @@
 
-package com.github.nathananderson.TODO.goal;
+package com.nathananderson.TODO.goal;
 
 public enum Progress {
 	NOT_STARTED ("Not Started", 1),
